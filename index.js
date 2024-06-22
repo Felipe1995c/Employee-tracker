@@ -1,5 +1,9 @@
-const { Client } = require('pg');
+import pkg from 'pg';
+const { Client } = pkg;
+import inquirer from 'inquirer';
+import cTable from 'console.table';
 
+// Database client configuration
 const client = new Client({
   user: 'your_username',
   host: 'localhost',
@@ -8,12 +12,11 @@ const client = new Client({
   port: 5432,
 });
 
+// Connect to the database
 client.connect();
 
 const mainMenu = async () => {
-  const inquirer = await import('inquirer');
-  
-  const answers = await inquirer.default.prompt({
+  const answers = await inquirer.prompt({
     name: 'action',
     type: 'list',
     message: 'What would you like to do?',
@@ -31,25 +34,25 @@ const mainMenu = async () => {
 
   switch (answers.action) {
     case 'View all departments':
-      viewAllDepartments();
+      await viewAllDepartments();
       break;
     case 'View all roles':
-      viewAllRoles();
+      await viewAllRoles();
       break;
     case 'View all employees':
-      viewAllEmployees();
+      await viewAllEmployees();
       break;
     case 'Add a department':
-      addDepartment();
+      await addDepartment();
       break;
     case 'Add a role':
-      addRole();
+      await addRole();
       break;
     case 'Add an employee':
-      addEmployee();
+      await addEmployee();
       break;
     case 'Update an employee role':
-      updateEmployeeRole();
+      await updateEmployeeRole();
       break;
     case 'Exit':
       client.end();
@@ -86,9 +89,7 @@ const viewAllEmployees = async () => {
 };
 
 const addDepartment = async () => {
-  const inquirer = await import('inquirer');
-
-  const answers = await inquirer.default.prompt({
+  const answers = await inquirer.prompt({
     name: 'name',
     type: 'input',
     message: 'Enter the name of the department:',
@@ -100,15 +101,13 @@ const addDepartment = async () => {
 };
 
 const addRole = async () => {
-  const inquirer = await import('inquirer');
-
   const departments = await client.query('SELECT * FROM department');
   const departmentChoices = departments.rows.map(department => ({
     name: department.name,
     value: department.id
   }));
 
-  const answers = await inquirer.default.prompt([
+  const answers = await inquirer.prompt([
     {
       name: 'title',
       type: 'input',
@@ -133,8 +132,6 @@ const addRole = async () => {
 };
 
 const addEmployee = async () => {
-  const inquirer = await import('inquirer');
-
   const roles = await client.query('SELECT * FROM role');
   const roleChoices = roles.rows.map(role => ({
     name: role.title,
@@ -148,7 +145,7 @@ const addEmployee = async () => {
   }));
   managerChoices.push({ name: 'None', value: null });
 
-  const answers = await inquirer.default.prompt([
+  const answers = await inquirer.prompt([
     {
       name: 'first_name',
       type: 'input',
@@ -179,8 +176,6 @@ const addEmployee = async () => {
 };
 
 const updateEmployeeRole = async () => {
-  const inquirer = await import('inquirer');
-
   const employees = await client.query('SELECT * FROM employee');
   const employeeChoices = employees.rows.map(employee => ({
     name: `${employee.first_name} ${employee.last_name}`,
@@ -193,7 +188,7 @@ const updateEmployeeRole = async () => {
     value: role.id
   }));
 
-  const answers = await inquirer.default.prompt([
+  const answers = await inquirer.prompt([
     {
       name: 'employee_id',
       type: 'list',
