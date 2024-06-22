@@ -12,6 +12,7 @@
   "dependencies": {
     "console.table": "^0.10.0",
     "inquirer": "^9.2.23",
-    "mysql2": "^3.10.1"
+    "mysql2": "^3.10.1",
+    "pg": "^8.12.0"
   }
 }
