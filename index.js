@@ -1,9 +1,9 @@
 import pkg from 'pg';
-const { Client } = pkg;
 import inquirer from 'inquirer';
 import cTable from 'console.table';
 
-// Database client configuration
+const { Client } = pkg;
+
 const client = new Client({
   user: 'your_username',
   host: 'localhost',
@@ -12,7 +12,6 @@ const client = new Client({
   port: 5432,
 });
 
-// Connect to the database
 client.connect();
 
 const mainMenu = async () => {
