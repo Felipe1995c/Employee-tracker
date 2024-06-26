@@ -2,17 +2,7 @@ import pkg from 'pg';
 import inquirer from 'inquirer';
 import cTable from 'console.table';
 
-// const { Client } = pkg;
 
-// const client = new Client({
-//   user: 'your_username',
-//   host: 'localhost',
-//   database: 'employee_management',
-//   password: 'your_password',
-//   port: 5432,
-// });
-
-// client.connect();
 
 const mainMenu = async () => {
   const answers = await inquirer.prompt({

@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS department;
 
+USE employee_trackerDB;
+
 -- Department table
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
