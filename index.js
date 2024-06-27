@@ -1,9 +1,18 @@
-import pkg from 'pg';
-import inquirer from 'inquirer';
-import cTable from 'console.table';
+// Dependencies
+const inquirer = require('inquirer');
+const cTable  = require('console.table');
+const { Pool } = require('pg');
 
+// Used to create connection with database
+const pool = new Pool({
+  user: "postgres",
+  password: "Gina1azsxdc!",
+  host: "localhost",
+  database: "employee_trackerdb"
+});
+const PORT = 5432;
 
-
+// This is what will be displayed on the terminal as prompts
 const mainMenu = async () => {
   const answers = await inquirer.prompt({
     name: 'action',
@@ -50,31 +59,52 @@ const mainMenu = async () => {
 };
 
 const viewAllDepartments = async () => {
-  const res = await client.query('SELECT * FROM department');
-  console.table(res.rows);
+  pool.query('SELECT * FROM department ORDER BY department_name', (err, res)=> {
+    if(err) throw err;
+    const p = new cTable();
+    res.forEach(({department_name}) => {
+      p.addRow({Department: `${department_name}`});
+    });
+  p.printTable();
   mainMenu();
+  });
 };
 
 const viewAllRoles = async () => {
-  const res = await client.query(`
+  pool.query(`
     SELECT role.id, role.title, department.name AS department, role.salary
     FROM role
     JOIN department ON role.department_id = department.id
-  `);
-  console.table(res.rows);
+  `, (err, res)=> {
+    if(err) throw err;
+    const p = new cTable();
+    res.forEach(({title, salary}) => {
+      p.addRow({Title: `${title}`,Salary: `${salary}`});
+    });
+  });
+  p.printTable();
   mainMenu();
 };
 
 const viewAllEmployees = async () => {
-  const res = await client.query(`
+ const query = `
     SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, manager.first_name AS manager_first_name, manager.last_name AS manager_last_name
     FROM employee
     JOIN role ON employee.role_id = role.id
     JOIN department ON role.department_id = department.id
     LEFT JOIN employee manager ON employee.manager_id = manager.id
-  `);
-  console.table(res.rows);
-  mainMenu();
+  `;
+  pool.query(query, (err, res) => {
+    if (err) throw(err);
+    const p = new cTable();
+    res.forEach(({  employee_id, first_name, last_name, title, salary, department_name}) => {
+      p.addRow({ Employee_ID: `${employee_id}`, First_Name: `${first_name}`, Last_Name: `${last_name}`, Title: `${title}`, Salary: `${salary}`, Department: `${department_name}` });
+    
+    });
+    p.printTable();
+    mainMenu();
+});
+
 };
 
 const addDepartment = async () => {
@@ -84,13 +114,13 @@ const addDepartment = async () => {
     message: 'Enter the name of the department:',
   });
 
-  await client.query('INSERT INTO department (name) VALUES ($1)', [answers.name]);
+  await pool.query('INSERT INTO department (name) VALUES ($1)', [answers.name]);
   console.log(`Department ${answers.name} added.`);
   mainMenu();
 };
 
 const addRole = async () => {
-  const departments = await client.query('SELECT * FROM department');
+  const departments = ('SELECT * FROM department');
   const departmentChoices = departments.rows.map(department => ({
     name: department.name,
     value: department.id
@@ -115,19 +145,19 @@ const addRole = async () => {
     }
   ]);
 
-  await client.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)', [answers.title, answers.salary, answers.department_id]);
+  await pool.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3)', [answers.title, answers.salary, answers.department_id]);
   console.log(`Role ${answers.title} added.`);
   mainMenu();
 };
 
 const addEmployee = async () => {
-  const roles = await client.query('SELECT * FROM role');
+  const roles = await pool.query('SELECT * FROM role');
   const roleChoices = roles.rows.map(role => ({
     name: role.title,
     value: role.id
   }));
 
-  const employees = await client.query('SELECT * FROM employee');
+  const employees = await pool.query('SELECT * FROM employee');
   const managerChoices = employees.rows.map(employee => ({
     name: `${employee.first_name} ${employee.last_name}`,
     value: employee.id
@@ -159,19 +189,19 @@ const addEmployee = async () => {
     }
   ]);
 
-  await client.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id]);
+  await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.first_name, answers.last_name, answers.role_id, answers.manager_id]);
   console.log(`Employee ${answers.first_name} ${answers.last_name} added.`);
   mainMenu();
 };
 
 const updateEmployeeRole = async () => {
-  const employees = await client.query('SELECT * FROM employee');
+  const employees = await pool.query('SELECT * FROM employee');
   const employeeChoices = employees.rows.map(employee => ({
     name: `${employee.first_name} ${employee.last_name}`,
     value: employee.id
   }));
 
-  const roles = await client.query('SELECT * FROM role');
+  const roles = await pool.query('SELECT * FROM role');
   const roleChoices = roles.rows.map(role => ({
     name: role.title,
     value: role.id
@@ -192,7 +222,7 @@ const updateEmployeeRole = async () => {
     }
   ]);
 
-  await client.query('UPDATE employee SET role_id = $1 WHERE id = $2', [answers.role_id, answers.employee_id]);
+  await pool.query('UPDATE employee SET role_id = $1 WHERE id = $2', [answers.role_id, answers.employee_id]);
   console.log(`Employee role updated.`);
   mainMenu();
 };

@@ -1,4 +1,4 @@
-USE employee_trackerDB;
+\c employee_trackerdb;
 
-INSERT INTO department (department_name)
-VALUES ('Accounting'), ('Admin'), ('Engineering'), ("HR");
+INSERT INTO department (name)
+VALUES ('Accounting'), ('Admin'), ('Engineering'), ('HR'), ('CEO'), ('Design'), ('Labor');
