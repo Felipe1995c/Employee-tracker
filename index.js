@@ -6,7 +6,7 @@ const { Pool } = require('pg');
 // Used to create connection with database
 const pool = new Pool({
   user: "postgres",
-  password: "Gina1azsxdc!",
+  password: "",
   host: "localhost",
   database: "employee_trackerdb"
 });

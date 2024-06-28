@@ -1,5 +1,11 @@
+-- Connect to the database
 \c employee_trackerdb;
 
+-- Insert departments first to ensure department_id references work
+INSERT INTO department (name)
+VALUES ('Accounting'), ('Admin'), ('Engineering'), ('HR'), ('CEO'), ('Design'), ('Labor');
+
+-- Insert roles after departments to ensure department_id references work
 INSERT INTO role (title, salary, department_id)
 VALUES
   ('Accountant', 60000, 1),
