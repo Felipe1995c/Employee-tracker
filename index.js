@@ -6,7 +6,7 @@ const { Pool } = require('pg');
 // Used to create connection with database
 const pool = new Pool({
   user: "postgres",
-  password: "",
+  password: "Gina1azsxdc!",
   host: "localhost",
   database: "employee_trackerdb"
 });
@@ -57,18 +57,20 @@ const mainMenu = async () => {
       break;
   }
 };
-
+//!VIEW ALL DEPARTMENTS----//
 const viewAllDepartments = async () => {
-  pool.query('SELECT * FROM department ORDER BY department_name', (err, res)=> {
+  pool.query('SELECT * FROM department ORDER BY name', (err, res)=> {
     if(err) throw err;
-    const p = new cTable();
-    res.forEach(({department_name}) => {
-      p.addRow({Department: `${department_name}`});
+    // console.log(res);
+    res.rows.forEach(({name}) => {
+      console.table({Department: `${name}`});
     });
-  p.printTable();
+  
   mainMenu();
   });
 };
+
+// VIEW ALL ROLES------//
 
 const viewAllRoles = async () => {
   pool.query(`
@@ -81,10 +83,13 @@ const viewAllRoles = async () => {
     res.forEach(({title, salary}) => {
       p.addRow({Title: `${title}`,Salary: `${salary}`});
     });
+    p.printTable();
   });
-  p.printTable();
   mainMenu();
 };
+
+
+//VIEW ALL EMPLOYEES//
 
 const viewAllEmployees = async () => {
  const query = `
@@ -104,8 +109,9 @@ const viewAllEmployees = async () => {
     p.printTable();
     mainMenu();
 });
-
 };
+
+// ADD DEPARTMENT//
 
 const addDepartment = async () => {
   const answers = await inquirer.prompt({
@@ -119,8 +125,10 @@ const addDepartment = async () => {
   mainMenu();
 };
 
+// ADD ROLE //
+
 const addRole = async () => {
-  const departments = ('SELECT * FROM department');
+  const departments = await pool.query('SELECT * FROM department');
   const departmentChoices = departments.rows.map(department => ({
     name: department.name,
     value: department.id
@@ -149,6 +157,8 @@ const addRole = async () => {
   console.log(`Role ${answers.title} added.`);
   mainMenu();
 };
+
+// ADD EMPLOYEE-----//
 
 const addEmployee = async () => {
   const roles = await pool.query('SELECT * FROM role');
@@ -193,6 +203,8 @@ const addEmployee = async () => {
   console.log(`Employee ${answers.first_name} ${answers.last_name} added.`);
   mainMenu();
 };
+
+//UPDATE EMPLOYEE-----//
 
 const updateEmployeeRole = async () => {
   const employees = await pool.query('SELECT * FROM employee');
