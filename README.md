@@ -43,53 +43,14 @@ The following video shows an example of the application being used from the comm
 
 You’ll need to use the [pg package](https://www.npmjs.com/package/pg) to connect to your PostgreSQL database and perform queries, and the [Inquirer package](https://www.npmjs.com/package/inquirer/v/8.2.4) to interact with the user via the command line.
 
-
-* `department`
-
-  * `id`: `SERIAL PRIMARY KEY`
-
-  * `name`: `VARCHAR(30) UNIQUE NOT NULL` to hold department name
-
-* `role`
-
-  * `id`: `SERIAL PRIMARY KEY`
-
-  * `title`: `VARCHAR(30) UNIQUE NOT NULL` to hold role title
-
-  * `salary`: `DECIMAL NOT NULL` to hold role salary
-
-  * `department_id`: `INTEGER NOT NULL` to hold reference to department role belongs to
-
-* `employee`
-
-  * `id`: `SERIAL PRIMARY KEY`
-
-  * `first_name`: `VARCHAR(30) NOT NULL` to hold employee first name
-
-  * `last_name`: `VARCHAR(30) NOT NULL` to hold employee last name
-
-  * `role_id`: `INTEGER NOT NULL` to hold reference to employee role
-
-  * `manager_id`: `INTEGER` to hold reference to another employee that is the manager of the current employee (`null` if the employee has no manager)
-
-You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
+1. Install the packages required by entering "npm install"
+2. Make sure you a .env file is created and filled in with sql username and password.
+3. Then run the schema.sql file along with the seed files. (department, role, and employee).
+4. Exit the sql database, then you can run index.js to get all the prompts.
+5. Then just follow the prompts.
 
 ## Usage
 
 Start by typing "node index.js" into the integrated terminal.
 You will then be presented with a list of options that you will be able to access using the arrow keys and enter key.
 The prompts will then give you a response.
-## Bonus
-
-Try to add some additional functionality to your application, such as the ability to do the following:
-
-* Update employee managers.
-
-* View employees by manager.
-
-* View employees by department.
-
-* Delete departments, roles, and employees.
-
-* View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.
-
