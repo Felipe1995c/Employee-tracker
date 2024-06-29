@@ -61,7 +61,7 @@ const mainMenu = async () => {
 const viewAllDepartments = async () => {
   pool.query('SELECT * FROM department ORDER BY name', (err, res)=> {
     if(err) throw err;
-    // console.log(res);
+    // console.log(res); 
     res.rows.forEach(({name}) => {
       console.table({Department: `${name}`});
     });
@@ -79,11 +79,9 @@ const viewAllRoles = async () => {
     JOIN department ON role.department_id = department.id
   `, (err, res)=> {
     if(err) throw err;
-    const p = new cTable();
-    res.forEach(({title, salary}) => {
-      p.addRow({Title: `${title}`,Salary: `${salary}`});
+    res.rows.forEach(({title, salary}) => {
+      console.table({Title: `${title}`,Salary: `${salary}`});
     });
-    p.printTable();
   });
   mainMenu();
 };
@@ -92,21 +90,19 @@ const viewAllRoles = async () => {
 //VIEW ALL EMPLOYEES//
 
 const viewAllEmployees = async () => {
- const query = `
+query = (`
     SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, manager.first_name AS manager_first_name, manager.last_name AS manager_last_name
     FROM employee
     JOIN role ON employee.role_id = role.id
     JOIN department ON role.department_id = department.id
     LEFT JOIN employee manager ON employee.manager_id = manager.id
-  `;
+  `);
   pool.query(query, (err, res) => {
     if (err) throw(err);
-    const p = new cTable();
-    res.forEach(({  employee_id, first_name, last_name, title, salary, department_name}) => {
-      p.addRow({ Employee_ID: `${employee_id}`, First_Name: `${first_name}`, Last_Name: `${last_name}`, Title: `${title}`, Salary: `${salary}`, Department: `${department_name}` });
+    res.rows.forEach(({  employee_id, first_name, last_name, title, salary, department_name}) => {
+      console.table({ Employee_ID: `${employee_id}`, First_Name: `${first_name}`, Last_Name: `${last_name}`, Title: `${title}`, Salary: `${salary}`, Department: `${department_name}` });
     
     });
-    p.printTable();
     mainMenu();
 });
 };
